@@ -8,7 +8,7 @@ NetR and AttR were conceived primarily to help experimental researchers in their
 
 ## Getting Started
 
-Both NetR and AttR run on Python3, so users need to make sure that they have Python3 installed in their machines. Both programs also require the one-time installation of two dependencies: the Intermine API and the Pandas package for data structure and analysis in Python (see below for details). Once both dependencies have been locally installed, the NetR.py and AttR.py scripts can be started from command line in both Mac OS and Windows, and they will operate through a standard graphic user interface (GUI) with a familiar look and operability. Windows users can also download the corresponding standalone executable files, which will allow them to start the current version of both programs by double-clicking on the corresponding file/icon.
+Both NetR and AttR run on Python3, so users need to make sure that they have Python3 installed in their machines. Both programs also require the one-time installation of two dependencies: the Intermine API and the Pandas package for data structure and analysis in Python (see below for details). Once both dependencies have been locally installed, the NetR.py and AttR.py scripts can be started from command line in both Mac OS and Windows, and they will operate through a standard graphic user interface (GUI) with a familiar look and operability. Windows users can also download the corresponding standalone executable files, which will allow them to start the current version of both programs by double-clicking on the corresponding file/icon. NB: users will have to work around the usual warnings about opening programs from an unverifiable/untrusted source.
 
 ### Prerequisites
 
