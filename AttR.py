@@ -9,12 +9,12 @@ import tkinter.filedialog as fd
 import tkinter.messagebox as messagebox
 
 service_urls = {
-    'Drosophila melanogaster': "http://www.flymine.org/query/service",
-    'Danio rerio': "http://zmine.zfin.org/service",
-    'Caenorhabditis elegans': "http://intermine.wormbase.org/tools/wormmine/service",
-    'Rattus norvegicus': "http://ratmine.org/ratmine/service",
-    'Mus musculus': "http://www.mousemine.org/mousemine/service",
-    'Homo sapiens': "http://www.humanmine.org/humanmine/service",
+    'Drosophila melanogaster': "https://www.flymine.org/query/service",
+    'Danio rerio': "https://zmine.zfin.org/service",
+    'Caenorhabditis elegans': "https://intermine.wormbase.org/tools/wormmine/service",
+    'Rattus norvegicus': "https://ratmine.org/ratmine/service",
+    'Mus musculus': "https://www.mousemine.org/mousemine/service",
+    'Homo sapiens': "https://www.humanmine.org/humanmine/service",
 }
 
 
@@ -61,23 +61,27 @@ class GUI(tk.Tk):
     def combobox_organism(self, row, column):
         frame = ttk.Frame(self.container)
         frame.grid(row=row, column=column, sticky='nsew')
-        ttk.Label(frame, text="Organism:        ").grid(row=0, column=0, sticky='w')
+        ttk.Label(frame, text="Organism:        ").grid(
+            row=0, column=0, sticky='w')
         self.org_name = tk.StringVar()
         combobox_values = tuple(sorted(service_urls.keys()))
         self.organism_picker = ttk.Combobox(frame, values=combobox_values,
                                             textvariable=self.org_name, width=39, state='readonly')
 
-        self.organism_picker.set(combobox_values[combobox_values.index("Drosophila melanogaster")])
+        self.organism_picker.set(
+            combobox_values[combobox_values.index("Drosophila melanogaster")])
         self.organism_picker.grid(row=0, column=1, sticky='w')
 
     def netr_submission(self, row, column):
         frame = ttk.Frame(self.container)
         frame.grid(row=row, column=column, sticky='nsew')
 
-        ttk.Label(frame, text="NetR Table:      ").grid(row=0, column=0, sticky='w')
+        ttk.Label(frame, text="NetR Table:      ").grid(
+            row=0, column=0, sticky='w')
 
         self.netr_filepath = tk.StringVar()
-        ttk.Entry(frame, textvariable=self.netr_filepath, state='readonly', width=30).grid(row=0, column=1, sticky='w')
+        ttk.Entry(frame, textvariable=self.netr_filepath,
+                  state='readonly', width=30).grid(row=0, column=1, sticky='w')
 
         self.netr_submission_button = ttk.Button(frame, text="Open File",
                                                  command=lambda: self.browse(self.netr_filepath))
@@ -87,7 +91,8 @@ class GUI(tk.Tk):
         frame = ttk.Frame(self.container)
         frame.grid(row=row, column=column, sticky='nsew')
 
-        ttk.Label(frame, text="Attribute Table:").grid(row=0, column=0, sticky='w')
+        ttk.Label(frame, text="Attribute Table:").grid(
+            row=0, column=0, sticky='w')
 
         self.attribute_filepath = tk.StringVar()
         ttk.Entry(frame, textvariable=self.attribute_filepath, state='readonly', width=30).grid(row=0, column=1,
@@ -134,9 +139,12 @@ class GUI(tk.Tk):
         frame = ttk.Frame(self.container)
         frame.grid(row=row, column=column, sticky='e')
 
-        ttk.Button(frame, text="Reset", command=self.controller.reset).grid(row=0, column=0, sticky='e')
-        ttk.Button(frame, text="Clear", command=self.clear).grid(row=0, column=1, sticky='e')
-        ttk.Button(frame, text="Submit", command=self.submit1).grid(row=0, column=2, sticky='e')
+        ttk.Button(frame, text="Reset", command=self.controller.reset).grid(
+            row=0, column=0, sticky='e')
+        ttk.Button(frame, text="Clear", command=self.clear).grid(
+            row=0, column=1, sticky='e')
+        ttk.Button(frame, text="Submit", command=self.submit1).grid(
+            row=0, column=2, sticky='e')
 
     def clear(self):
         self.netr_filepath.set('')
@@ -155,21 +163,26 @@ class GUI(tk.Tk):
                 if self.header.get():
                     attribute_df = pd.read_csv(self.attribute_filepath.get())
                 else:
-                    attribute_df = pd.read_csv(self.attribute_filepath.get(), header=None)
-                AttributePreview(self, attribute_df, self.header.get(), self.table_type.get())
+                    attribute_df = pd.read_csv(
+                        self.attribute_filepath.get(), header=None)
+                AttributePreview(self, attribute_df,
+                                 self.header.get(), self.table_type.get())
 
             else:
-                messagebox.showwarning(message="Please, provide a valid path to the Attribute table")
+                messagebox.showwarning(
+                    message="Please, provide a valid path to the Attribute table")
                 self.netr_filepath.set('')
                 self.attribute_filepath.set('')
 
         else:
-            messagebox.showwarning(message="Please, provide a valid path to the NetR table")
+            messagebox.showwarning(
+                message="Please, provide a valid path to the NetR table")
             self.netr_filepath.set('')
             self.attribute_filepath.set('')
 
     def submit2(self):
-        another_attribute_table = messagebox.askyesno(message="Would you like to add another attribute table?")
+        another_attribute_table = messagebox.askyesno(
+            message="Would you like to add another attribute table?")
 
         if another_attribute_table:
             self.organism_picker.state(['disabled'])
@@ -214,7 +227,8 @@ class AttributePreview(tk.Toplevel):
 
         frame = ttk.Frame(canvas)
 
-        self.horizontal_scrollbar = ttk.Scrollbar(self.container, orient='horizontal', command=canvas.xview)
+        self.horizontal_scrollbar = ttk.Scrollbar(
+            self.container, orient='horizontal', command=canvas.xview)
         self.horizontal_scrollbar.grid(row=2, column=0, sticky='ew')
 
         canvas.configure(xscrollcommand=self.horizontal_scrollbar.set)
@@ -265,7 +279,8 @@ class AttributePreview(tk.Toplevel):
         # For Lists we just need the user to name the columns (if they want to exclude a column, leave blank ).
         # and for Discrete/Continuous we will need the user to name the column and pick the Mapping Key
 
-        self.controller.controller.create_node_dataframe()  # CONSIDER moving this to submit1
+        # CONSIDER moving this to submit1
+        self.controller.controller.create_node_dataframe()
 
         def create_mapping_key_synonym_dataframe():
             mapping_key = self.table['Mapping Key'].tolist()
@@ -273,9 +288,11 @@ class AttributePreview(tk.Toplevel):
                                     self.controller.controller.info['Organism'], 'synonyms.value',
                                     'symbol')
 
-            synonym_dataframe = pd.DataFrame(list(query.rows()), columns=['Synonyms', 'Updated Mapping Key'])
+            synonym_dataframe = pd.DataFrame(list(query.rows()), columns=[
+                                             'Synonyms', 'Updated Mapping Key'])
 
-            symbol_df = pd.concat([synonym_dataframe['Updated Mapping Key']] * 2, axis=1)
+            symbol_df = pd.concat(
+                [synonym_dataframe['Updated Mapping Key']] * 2, axis=1)
             symbol_df.columns = ['Synonyms', 'Updated Mapping Key']
 
             synonym_dataframe = pd.concat([synonym_dataframe, symbol_df], axis=0,
@@ -331,7 +348,8 @@ class AttributePreview(tk.Toplevel):
             self.table = self.table.merge(updated_key, how='left', left_on='Mapping Key',
                                           right_on='Synonyms')
             self.table.drop(['Mapping Key', 'Synonyms'], axis=1, inplace=True)
-            self.table.rename(columns={'Updated Mapping Key': 'Mapping Key'}, inplace=True)
+            self.table.rename(
+                columns={'Updated Mapping Key': 'Mapping Key'}, inplace=True)
 
             # store
             self.controller.controller.info['Discrete and Continuous Attributes'] = self.controller.controller.info[
@@ -380,13 +398,15 @@ class AttR:
 
     def create_node_dataframe(self):
         query = intermine_query(self.extract_primary_ids_from_netr(),
-                                self.info['Organism'], 'synonyms.value','symbol')
+                                self.info['Organism'], 'synonyms.value', 'symbol')
 
-        self.nodes = pd.DataFrame(list(query.rows()), columns=['Synonyms', 'Symbol'])
+        self.nodes = pd.DataFrame(list(query.rows()), columns=[
+                                  'Synonyms', 'Symbol'])
 
     def make_attribute_table(self):
 
-        self.output = self.nodes['Symbol'].to_frame(name='Mapping Key').drop_duplicates()
+        self.output = self.nodes['Symbol'].to_frame(
+            name='Mapping Key').drop_duplicates()
 
         # if there is at least 1 submitted Discrete/Continuous Dataset, left merge the output and combined
         # discrete/continuous dataframe (all discrete/continuous dataframes were combined into a single dataframe as

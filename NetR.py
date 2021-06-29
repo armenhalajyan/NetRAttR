@@ -19,12 +19,12 @@ except ImportError as error:
         raise SystemExit(repr(error))
 
 service_urls = {
-    'Drosophila melanogaster': "http://www.flymine.org/query/service",
-    'Danio rerio': "http://zmine.zfin.org/service",
-    'Caenorhabditis elegans': "http://intermine.wormbase.org/tools/wormmine/service",
-    'Rattus norvegicus': "http://ratmine.org/ratmine/service",
-    'Mus musculus': "http://www.mousemine.org/mousemine/service",
-    'Homo sapiens': "http://www.humanmine.org/humanmine/service",
+    'Drosophila melanogaster': "https://www.flymine.org/query/service",
+    'Danio rerio': "https://zmine.zfin.org/service",
+    'Caenorhabditis elegans': "https://intermine.wormbase.org/tools/wormmine/service",
+    'Rattus norvegicus': "https://ratmine.org/ratmine/service",
+    'Mus musculus': "https://www.mousemine.org/mousemine/service",
+    'Homo sapiens': "https://www.humanmine.org/humanmine/service",
 }
 
 
@@ -84,14 +84,16 @@ class Wheel:
 
     def update_core(self):
         # make an intermine query with the core genes information
-        query = intermine_query(self.core, self.organism, ['primaryIdentifier', 'secondaryIdentifier', 'symbol'])
+        query = intermine_query(self.core, self.organism, [
+                                'primaryIdentifier', 'secondaryIdentifier', 'symbol'])
 
-        self.core = pd.DataFrame(list(query.rows()), columns=['primaryIdentifier', 'secondaryIdentifier', 'symbol'])
+        self.core = pd.DataFrame(list(query.rows()), columns=[
+                                 'primaryIdentifier', 'secondaryIdentifier', 'symbol'])
 
     def update_primaries(self):
         query = intermine_query(','.join(str(item) for item in list(self.ids)), self.organism,
                                 ['symbol', 'secondaryIdentifier',
-                                 'primaryIdentifier'])
+                                'primaryIdentifier'])
 
         self.primary_interactors_df = pd.DataFrame(list(query.rows()), columns=['symbol', 'secondaryIdentifier',
                                                                                 'primaryIdentifier'])
@@ -106,11 +108,11 @@ class Wheel:
     def get_secondaries(self):
         query = intermine_query(','.join(str(item) for item in list(self.ids)), self.organism,
                                 ['primaryIdentifier', 'secondaryIdentifier',
-                                 'symbol', 'interactions.details.type',
+                                'symbol', 'interactions.details.type',
                                  'interactions.participant2.symbol',
                                  'interactions.participant2.'
                                  'secondaryIdentifier',
-                                 'interactions.participant2.'
+                                 'interactions.participant2.',
                                  'primaryIdentifier'])
 
         self.secondary_interactors_df = pd.DataFrame(list(query.rows()), columns=["Source Primary Identifier",
@@ -127,16 +129,19 @@ class Wheel:
         self.dataframe = pd.concat([pd.concat([self.core] * self.primary_interactors_df.shape[0], ignore_index=True),
                                     self.primary_interactors_df], axis=1, ignore_index=True)
 
-        self.dataframe.columns = ["Source Primary Identifier",
-                                  "Source Secondary Identifier",
-                                  "Source Symbol",
-                                  "Interaction",
-                                  "Target Symbol",
-                                  "Target Secondary Identifier",
-                                  "Target Primary Identifier"
-                                  ]
+        self.dataframe.columns = [
+            "Source Primary Identifier",
+            "Source Secondary Identifier",
+            "Source Symbol",
+            "Interaction",
+            "Target Symbol",
+            "Target Secondary Identifier",
+            "Target Primary Identifier"
+        ]
+
         if hasattr(self, 'secondary_interactors_df'):
-            self.dataframe = self.dataframe.append(self.secondary_interactors_df, ignore_index=True)
+            self.dataframe = self.dataframe.append(
+                self.secondary_interactors_df, ignore_index=True)
 
 
 class GUI(tk.Tk):
@@ -167,16 +172,19 @@ class GUI(tk.Tk):
     def dataset_name(self, row, column):
         dn_frame = ttk.Frame(self)
         dn_frame.grid(row=row, column=column, sticky='nsew')
-        ttk.Label(dn_frame, text="DataSet name:").grid(row=0, column=0, sticky='w')
+        ttk.Label(dn_frame, text="DataSet name:").grid(
+            row=0, column=0, sticky='w')
         self.dataset_name_var = tk.StringVar()
-        dataset_name_entry = ttk.Entry(dn_frame, textvariable=self.dataset_name_var)
+        dataset_name_entry = ttk.Entry(
+            dn_frame, textvariable=self.dataset_name_var)
         dataset_name_entry.grid(row=1, column=0, sticky='w')
 
     def file_submission(self, row, column):
         file_frame = ttk.Frame(self)
         file_frame.grid(row=row, column=column, sticky='nsew')
         self.file_path = tk.StringVar()
-        ttk.Entry(file_frame, textvariable=self.file_path, state='readonly').grid(row=0, column=0, sticky='w')
+        ttk.Entry(file_frame, textvariable=self.file_path,
+                  state='readonly').grid(row=0, column=0, sticky='w')
         ttk.Button(file_frame, text="Open File",
                    command=lambda: browse(self.file_path)).grid(row=0, column=1, sticky='e')
 
@@ -188,19 +196,22 @@ class GUI(tk.Tk):
     def combobox_organism(self, row, column):
         organism_frame = ttk.Frame(self)
         organism_frame.grid(row=row, column=column, sticky='nsew')
-        ttk.Label(organism_frame, text="Organism:").grid(row=0, column=0, sticky='w')
+        ttk.Label(organism_frame, text="Organism:").grid(
+            row=0, column=0, sticky='w')
         self.org_name = tk.StringVar()
         combobox_values = tuple(sorted(service_urls.keys()))
         self.organism_picker = ttk.Combobox(organism_frame, values=combobox_values,
                                             textvariable=self.org_name, width=18, state='readonly')
 
-        self.organism_picker.set(combobox_values[combobox_values.index("Drosophila melanogaster")])
+        self.organism_picker.set(
+            combobox_values[combobox_values.index("Drosophila melanogaster")])
         self.organism_picker.grid(row=1, column=0, sticky='w')
 
     def core(self, row, column):
         c_frame = ttk.Frame(self)
         c_frame.grid(row=row, column=column, sticky='nsew')
-        ttk.Label(c_frame, text="Core gene symbol:").grid(row=0, column=0, sticky='w')
+        ttk.Label(c_frame, text="Core gene symbol:").grid(
+            row=0, column=0, sticky='w')
         self.core_var = tk.StringVar()
         core_entry = ttk.Entry(c_frame, textvariable=self.core_var)
         core_entry.grid(row=1, column=0, sticky='ew')
@@ -208,9 +219,11 @@ class GUI(tk.Tk):
     def technique(self, row, column):
         self.technique_frame = ttk.Frame(self)
         self.technique_frame.grid(row=row, column=column, sticky='nsew')
-        ttk.Label(self.technique_frame, text="Technique:").grid(row=0, column=0, sticky='w')
+        ttk.Label(self.technique_frame, text="Technique:").grid(
+            row=0, column=0, sticky='w')
         self.technique_var = tk.StringVar()
-        self.technique_entry = ttk.Entry(self.technique_frame, textvariable=self.technique_var)
+        self.technique_entry = ttk.Entry(
+            self.technique_frame, textvariable=self.technique_var)
         self.technique_entry.grid(row=1, column=0, sticky='ew')
 
     def header_checkbutton_frame(self, row, column):
@@ -226,30 +239,34 @@ class GUI(tk.Tk):
         dataset_reference_frame = ttk.Frame(self)
         dataset_reference_frame.grid(row=row, column=column, sticky='nsew')
         self.dataset_ref = "Data sets added: "
-        self.dataset_ref_label = ttk.Label(dataset_reference_frame, text=self.dataset_ref)
+        self.dataset_ref_label = ttk.Label(
+            dataset_reference_frame, text=self.dataset_ref)
         self.dataset_ref_label.grid(row=0, column=0, sticky='w')
 
     def buttons(self, row, column):
         button_frame = ttk.Frame(self)
         button_frame.grid(row=row, column=column, sticky='nsew')
 
-        ttk.Button(button_frame, text="Reset", command=self.controller.reset).grid(row=0, column=0, sticky='e')
-        ttk.Button(button_frame, text="Clear", command=self.clear).grid(row=0, column=1, sticky='e')
-        ttk.Button(button_frame, text="Submit", command=self.submit1).grid(row=0, column=2, sticky='e')
+        ttk.Button(button_frame, text="Reset", command=self.controller.reset).grid(
+            row=0, column=0, sticky='e')
+        ttk.Button(button_frame, text="Clear", command=self.clear).grid(
+            row=0, column=1, sticky='e')
+        ttk.Button(button_frame, text="Submit", command=self.submit1).grid(
+            row=0, column=2, sticky='e')
 
     def validate_core_gene(self):
         query = intermine_query(self.core_var.get(), self.org_name.get(),
                                 ['primaryIdentifier', 'secondaryIdentifier', 'symbol'])
 
-        if len(query.rows()) == 0:
-            messagebox.showinfo(message='Invalid core gene identifier. Please enter a valid core gene identifier.')
+        if query.count == 0:
+            messagebox.showinfo(
+                message='Invalid core gene identifier. Please enter a valid core gene identifier.')
             self.core_var.set("")
             return False
 
         return True
 
     def submit1(self):
-
         """After the User has entered all the information and pressed submit1, this method is called. User-input is
         stored in the 'self.info' dictionary under the appropriate keys. The file is read and  converted to a dataframe
         and based on this dataframe a preview window is generated that allows the user to select the correct column(s).
@@ -353,13 +370,15 @@ class Preview(tk.Toplevel):
                 ttk.Label(table_frame, text=table.iloc[row, column]).grid(row=row + 1, column=column,
                                                                           padx=2, pady=2, sticky='nsew')
 
-        ttk.Button(bottom_frame, text='Okay', command=self.okay).grid(row=0, column=table.head().shape[1], sticky='e')
+        ttk.Button(bottom_frame, text='Okay', command=self.okay).grid(
+            row=0, column=table.head().shape[1], sticky='e')
 
     def select_column(self, button_ref):
         style = ttk.Style()
 
         self.columns_to_use.append(self.columns.index(button_ref))
-        style.configure('selected.TButton', font=('Sans', '12', 'bold underline'))
+        style.configure('selected.TButton', font=(
+            'Sans', '12', 'bold underline'))
         button_ref.configure(style='selected.TButton')
 
     def deselect_column(self, button_ref):
@@ -404,14 +423,16 @@ class NetR:
                     wheel.get_secondaries()
                 wheel.convert_to_dataframe()
 
-            self.master_dataframe = pd.concat([wheel.dataframe for wheel in self.wheels.container])
+            self.master_dataframe = pd.concat(
+                [wheel.dataframe for wheel in self.wheels.container])
         except ValueError as ve:
             if str(ve) == 'No objects to concatenate':
                 self.master_dataframe = self.wheels[0].dataframe
             else:
                 raise ve
 
-        self.master_dataframe.to_csv(fd.asksaveasfilename(defaultextension='.csv'), index=False)
+        self.master_dataframe.to_csv(fd.asksaveasfilename(
+            defaultextension='.csv'), index=False)
         self.reset()
 
     @staticmethod
