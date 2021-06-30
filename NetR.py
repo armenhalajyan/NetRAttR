@@ -112,7 +112,7 @@ class Wheel:
                                  'interactions.participant2.symbol',
                                  'interactions.participant2.'
                                  'secondaryIdentifier',
-                                 'interactions.participant2.',
+                                 'interactions.participant2.'
                                  'primaryIdentifier'])
 
         self.secondary_interactors_df = pd.DataFrame(list(query.rows()), columns=["Source Primary Identifier",
